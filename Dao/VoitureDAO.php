@@ -5,7 +5,7 @@
 class VoitureDAO{
 	public static function getVoituresByCategorie($lacateg){
 		try{
-			$sql = "select * from voiture, catvehicule, type
+			$sql = "select * from voiture, categorie_vehicule, type
 			where voiture.IDTYPE = type.IDTYPE
 			and type.IDCAT = catvehicule.IDCAT
 			and catvehicule.LIBELLECAT = :categ" ; //and type.IDCAT = :idcateg
