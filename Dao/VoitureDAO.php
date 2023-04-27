@@ -5,10 +5,10 @@
 class VoitureDAO{
 	public static function getVoituresByCategorie($lacateg){
 		try{
-			$sql = "select * from voiture, categorie_vehicule, type
-			where voiture.IDTYPE = type.IDTYPE
-			and type.IDCAT = catvehicule.IDCAT
-			and catvehicule.LIBELLECAT = :categ" ; //and type.IDCAT = :idcateg
+			$sql = "select * from vehicule, categorie_vehicule, type_vehicule
+			where vehicule.CODETYPE= type_vehicule.CODETYPE
+			and type_vehicule.CODECATEG = categorie_vehicule.CODECATEG
+			and categorie_vehicule.LIBELLECATEG = :categ" ; //and type.IDCAT = :idcateg
 			$requetePrepa = DBConnex::getInstance()->prepare($sql);
 			$requetePrepa->bindParam(":categ", $lacateg);
 
@@ -22,34 +22,36 @@ class VoitureDAO{
 
 	public static function getVoiture($leidvoiture){
 		try{
-			$sql = "select voiture.IDVOITURE, station.LIBELLESTATION, ville.LIBELLEVILLE, type.LIBELLETYPE, voiture.NBPLACE, voiture.AUTO_ON, voiture.KM, voiture.NIVEAUESSENCE
-							from voiture, type, station, ville
-							where type.IDTYPE = voiture.IDTYPE
-							and ville.IDVILLE = station.IDVILLE
-							and station.IDSTATION = voiture.IDSTATION
-							and IDVOITURE = :idvoiture" ;
+			$sql = "select vehicule.NUMVEHICULE, station.NOMLIEU, ville.NOMVILLE, type_vehicule.LIBELLETYPE, type_vehicule.NBPLACES, type_vehicule.AUTOMATIQUE, 
+			vehicule.KILOMETRAGE, vehicule.NIVEAUESSENCE, categorie_vehicule.LIBELLECATEG
+			from vehicule, type_vehicule, station, ville, categorie_vehicule
+			where type_vehicule.CODETYPE = vehicule.CODETYPE
+            and type_vehicule.CODECATEG = categorie_vehicule.CODECATEG
+			and ville.CODEVILLE = station.CODEVILLE
+			and station.CODELIEU = vehicule.CODELIEU
+			and station.CODEVILLE = vehicule.CODEVILLE
+			and NUMVEHICULE = :idVoiture";
 			$requetePrepa = DBConnex::getInstance()->prepare($sql);
-			$requetePrepa->bindParam(":idvoiture", $leidvoiture);
+			$requetePrepa->bindParam(":idVoiture", $leidvoiture);
 			$requetePrepa->execute();
 			$reponse = $requetePrepa->fetch(PDO::FETCH_ASSOC);
 		}catch(Exception $e){
-			$reponse = "";
+			$reponse = "not found";
 		}
 		return $reponse;
 	}
 
-	public static function ajouterVoiture($idStation, $idType, $libelle, $km, $niveauEssence, $nbPlace, $auto_on){
+	public static function ajouterVoiture($idStation, $idType, $libelle, $km, $niveauEssence){
 
-			$sql =  "INSERT INTO `voiture` ( IDSTATION, IDTYPE, LIBELLE, KM, NIVEAUESSENCE, NBPLACE, AUTO_ON)
-				VALUES (:idStation, :idType, :libelle, :km, :niveauEssence, :nbPlace, :auto_on)";
+			$sql =  "INSERT INTO `voiture` ( CODELIEU, CODETYPE, NUMVEHICULE, KILOMETRAGE, NIVEAUESSENCE)
+				VALUES (:idStation, :idType, :libelle, :km, :niveauEssence)";
 			$requetePrepa = DBConnex::getInstance()->prepare($sql);
 			$requetePrepa->bindParam(":idStation", $idStation);
 			$requetePrepa->bindParam(":idType", $idType);
 			$requetePrepa->bindParam(":libelle", $libelle);
 			$requetePrepa->bindParam(":km", $km);
 			$requetePrepa->bindParam(":niveauEssence", $niveauEssence);
-			$requetePrepa->bindParam(":nbPlace", $nbPlace);
-			$requetePrepa->bindParam(":auto_on", $auto_on);
+			
 			$requetePrepa->execute();
 
 

@@ -3,7 +3,7 @@ class EmployeDAO{
 	public static function authentification($login , $mdp){
 		try{
 			$sql = "select id, employe.login , statut from employe 
-			where employe.login=:username and employe.password=MD5(:mdp)" ;
+			where employe.login=:username and employe.mdp=MD5(:mdp)" ;
 			$requetePrepa = DBConnex::getInstance()->prepare($sql);
 			
 			$requetePrepa->bindParam(":username", $login);
